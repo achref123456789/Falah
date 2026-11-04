@@ -1,0 +1,3 @@
+<resources>
+    <string name="accessibility_service_description">Returns selected distracting apps to the home screen during unconfirmed prayer times.</string>
+</resources>
