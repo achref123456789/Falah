@@ -10,6 +10,7 @@ import android.location.LocationManager
 import android.location.LocationListener
 import android.Manifest
 import android.content.pm.PackageManager
+import android.util.Log
 import android.os.Looper
 import android.os.Bundle
 import android.os.Bundle
@@ -28,8 +29,12 @@ class MainActivity : Activity() {
     private lateinit var serviceStatus: TextView
     private val locationRequestCode = 4102
     private var locationManager: LocationManager? = null
-    override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState); PrayerScheduler.schedule(this); lat = prefs.getString("lat", "36.8065")!!.toDoubleOrNull() ?: 36.8065; lon = prefs.getString("lon", "10.1815")!!.toDoubleOrNull() ?: 10.1815; draw() }
-    override fun onResume() { super.onResume(); PrayerScheduler.schedule(this); if (::serviceStatus.isInitialized) refreshStatus() }
+    override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState); lat = prefs.getString("lat", "36.8065")!!.toDoubleOrNull() ?: 36.8065; lon = prefs.getString("lon", "10.1815")!!.toDoubleOrNull() ?: 10.1815; draw(); schedulePrayerAlarms() }
+    override fun onResume() { super.onResume(); schedulePrayerAlarms(); if (::serviceStatus.isInitialized) refreshStatus() }
+    private fun schedulePrayerAlarms() {
+        try { PrayerScheduler.schedule(this) }
+        catch (error: Exception) { Log.e("MainActivity", "Could not schedule prayer alarms", error) }
+    }
     private fun hasLocationPermission() = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
     private fun requestAutomaticLocation() {
         if (!hasLocationPermission()) {
